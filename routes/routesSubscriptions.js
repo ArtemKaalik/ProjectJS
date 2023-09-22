@@ -1,9 +1,9 @@
 const express = require('express');
 
-const router = express.Router()
+const router = express.Router();
 
 const subscriptions = require('../models/subscriptions');
-const subsController=require('../controllers/controllerSubscriptions')
+const subsController = require('../controllers/controllerSubscriptions');
 
 // //Post Method
 // router.post('/postSub', async (req, res) => {
