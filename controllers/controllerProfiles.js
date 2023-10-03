@@ -2,11 +2,9 @@ const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
 
 const getProfile = asyncHandler(async (req, res) => {
-    const username = req.body.username;
     const loggedin = req.loggedin;
-
-    // console.log(`print out username ${username}`)
-    const user = await User.findOne({ username }).exec();
+    
+    const user = await User.findOne(req.params.username).exec();
 
     if (!user) {
         return res.status(404).json({
@@ -27,10 +25,8 @@ const getProfile = asyncHandler(async (req, res) => {
 });
 
 const followUser = asyncHandler(async (req, res) => {
-    const username = req.body.username;
-
     const loginUser = await User.findOne({ email: req.userEmail }).exec();
-    const user = await User.findOne({ username }).exec();
+    const user = await User.findOne(req.params.username).exec();
 
     if (!user || !loginUser) {
         return res.status(404).json({
@@ -38,6 +34,7 @@ const followUser = asyncHandler(async (req, res) => {
         })
     }
     await loginUser.follow(user._id);
+    await user.addFollower(loginUser._id);
 
     return res.status(200).json({
         profile: user.toProfileJSON(loginUser)
@@ -46,10 +43,8 @@ const followUser = asyncHandler(async (req, res) => {
 });
 
 const unFollowUser = asyncHandler(async (req, res) => {
-    const { username } = req.params;
-
     const loginUser = await User.findOne({ email: req.userEmail }).exec();
-    const user = await User.findOne({ username }).exec();
+    const user = await User.findOne(req.params.username).exec();
 
     if (!user || !loginUser) {
         return res.status(404).json({
@@ -57,6 +52,7 @@ const unFollowUser = asyncHandler(async (req, res) => {
         })
     }
     await loginUser.unfollow(user._id);
+    await user.unfollow(loginUser._id);
 
     return res.status(200).json({
         profile: user.toProfileJSON(loginUser)

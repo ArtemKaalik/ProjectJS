@@ -8,7 +8,6 @@ const registerUser = asyncHandler(async (req, res) => {
     const username=req.body.username;
     const password=req.body.password;
     const id=req.body.subscription;
-    const subscription=await Subscription.findById(id).exec();
 
     // confirm data
     if (!email || !username || !password) {
@@ -21,8 +20,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const userObject = {
         "username": username,
         "password": hashedPwd,
-        "email": email,
-        "subscription": subscription.id
+        "email": email
     };
 
     const createdUser = await User.create(userObject);
@@ -39,6 +37,20 @@ const registerUser = asyncHandler(async (req, res) => {
         });
     }
 });
+
+const thisUser=asyncHandler(async(req,res)=>{
+    const email = req.userEmail;
+    const user = await User.findOne({ email }).exec();
+    if(!user){
+        return res.status(400).json({
+            message:"Unknown user!"
+        });
+    }
+    return res.status(200).json({
+        user:await user.toUserResponseAuth()
+    });
+});
+
 
 const showUserById = asyncHandler(async (req, res) => {
     const data = await Subscription.findById(req.params.id);
@@ -90,12 +102,13 @@ const userLogin = asyncHandler(async (req, res) => {
 
 
 const updateUser = asyncHandler(async (req, res) => {
+    const loginUser = await User.findOne({email:req.userEmail}).exec();
     const username = req.body.username;
     const email = req.body.email;
     const bio = req.body.bio;
     const image = req.body.image;
 
-    const update = await User.findOne(req.params.id).exec();
+    const update = await User.findById(loginUser._id).exec();
 
     if (email) {
         target.email = user.email;
@@ -117,13 +130,14 @@ const updateUser = asyncHandler(async (req, res) => {
     await update.save();
 
     return res.status(200).json({
-        user: target.toUserResponse()
+        user:await change.toUserResponseAuth()
     });
 
 });
 
 module.exports = {
     registerUser,
+    thisUser,
     showUserById,
     showUsers,
     userLogin,

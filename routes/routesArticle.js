@@ -7,7 +7,7 @@ const controllerArticle = require('../controllers/controllerArticle');
 
 router.get('/article', controllerArticle.allArticles);
 
-router.get('/article/:slug', controllerArticle.findbySlug);
+router.get('/article/:slug', verifyJWT, controllerArticle.findbySlug);
 
 router.post('/article/', verifyJWT, controllerArticle.createArticle);
 

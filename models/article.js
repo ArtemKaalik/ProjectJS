@@ -61,7 +61,7 @@ article.methods.updateFavoriteCount = async function () {
 }
 
 // user is the logged-in user
-article.methods.toArticleResponse = async function (user) {
+article.methods.toArticleResponse = async function () {
     const authorObj = await User.findById(this.author).exec();
     return {
         slug: this.slug,
@@ -72,7 +72,6 @@ article.methods.toArticleResponse = async function (user) {
         updatedAt: this.updatedAt,
         tagList: this.tagList,
         favorited: this.favorited,
-        favoritesCount: this.favouritesCount,
         author: await authorObj.toProfileJSON(user)
     }
 }

@@ -42,7 +42,7 @@ const updateSubscription=asyncHandler(async(req,res)=>{
     const price = req.body.price;
     const articleCount = req.body.articleCount;
 
-    const update=await Subscription.findById(req.params.id).exec();
+    const update=await Subscription.findOne(req.params.title).exec();
 
     if (title){
         update.title=title;
@@ -65,7 +65,8 @@ const updateSubscription=asyncHandler(async(req,res)=>{
 });
 
 const deleteSubscription=asyncHandler(async(req,res)=>{
-    const deleted=await Subscription.findByIdAndDelete(req.params.id);
+    const subscription = await Subscription.findByOne(req.params.title);
+    const deleted = await Subscription.findByIdAndRemove(subscription._id);
     res.send(`Subscription "${deleted.title}" has been deleted..`)
 });
 
@@ -77,17 +78,40 @@ const showSubscriptions=asyncHandler(async(req,res)=>{
 });
 
 const showById=asyncHandler(async(req,res)=>{
-    const data = await Subscription.findById(req.params.id);
+    const data = await Subscription.findOne(req.params.title);
     return res.status(200).json({
         subscription:data
     });
 });
 
+const giveSubscription=asyncHandler(async(req,res)=>{
+    const loginUser = await User.findOne({email:req.userEmail}).exec();
+    const subscription = await Subscription.findOne(req.params.title)
+    const authHeader = req.headers.authorization || req.headers.Authorization
+    const token = authHeader.split(' ')[1];
+    if (subscription.status === "Month") {
+        loginUser.subscriptionStartDate = Date.now();
+        loginUser.subscriptionEndDate = new Date();
+        loginUser.subscriptionEndDate.setMonth(loginUser.subscriptionEndDate.getMonth() + 1);
+    }
+
+    if (subscription.status === "Year") {
+        loginUser.subscriptionStartDate = Date.now();
+        loginUser.subscriptionEndDate = new Date();
+        loginUser.subscriptionEndDate.setFullYear(loginUser.subscriptionEndDate.getFullYear() + 1);
+    }
+    loginUser.subscription=subscription._id
+    await loginUser.save();
+    return res.status(200).json({
+        user:await loginUser.toUserResponseAuthSub(token)
+    });
+})
 
 module.exports = {
     addSubscription,
     updateSubscription,
     deleteSubscription,
     showSubscriptions,
-    showById
+    showById,
+    giveSubscription
 }

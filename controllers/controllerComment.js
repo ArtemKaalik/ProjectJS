@@ -5,7 +5,7 @@ const asyncHandler = require("express-async-handler");
 
 const addCommentsToArticle = asyncHandler(async (req, res) => {
     const loginUser = await User.findOne({email:req.userEmail}).exec();
-    const article = await Article.findById(req.params.id)
+    const article = await Article.findOne(req.params.slug)
     const body=req.body.body
 
     if (!loginUser) {
@@ -34,7 +34,7 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
 
 });
     const getCommentsFromArticle=asyncHandler(async(req,res)=>{
-    const article = await Article.findById(req.params.id)
+    const article = await Article.findOne(req.params.slug)
     const loginUser = await User.findOne({email:req.userEmail}).exec();
 
     if (!article) {
@@ -53,7 +53,7 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
 
 const deleteComment = asyncHandler(async (req, res) => {
     const loginUser = await User.findOne({email:req.userEmail}).exec();
-    const article = await Article.findById(req.params.id).exec();
+    const article = await Article.findOne(req.params.slug).exec();
 
     if (!loginUser) {
         return res.status(401).json({

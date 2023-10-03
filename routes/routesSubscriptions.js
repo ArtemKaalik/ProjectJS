@@ -2,8 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const subscriptions = require('../models/subscriptions');
-const subsController = require('../controllers/controllerSubscriptions');
+// const subscriptions = require('../models/subscriptions');
+const controllerSubscriptions = require('../controllers/controllerSubscriptions');
+const verifyJWT = require('../middleware/verifyJWT');
 
 // //Post Method
 // router.post('/postSub', async (req, res) => {
@@ -46,14 +47,16 @@ const subsController = require('../controllers/controllerSubscriptions');
 //     }
 // })
 
-router.post('/subs', subsController.addSubscription);
+router.post('/subs', controllerSubscriptions.addSubscription);
 
-router.put('/subs/:id',subsController.updateSubscription);
+router.put('/subs/:title', verifyJWT, controllerSubscriptions.updateSubscription);
 
-router.delete('/subs/:id',subsController.deleteSubscription);
+router.delete('/subs/:title', verifyJWT, controllerSubscriptions.deleteSubscription);
 
-router.get('/subs/all',subsController.showSubscriptions);
+router.get('/subs/all', verifyJWT, controllerSubscriptions.showSubscriptions);
 
-router.get('/subs/:id',subsController.showById);
+router.get('/subs/:title', verifyJWT, controllerSubscriptions.showById);
+
+router.put('/sub/give/:title',verifyJWT, controllerSubscriptions.giveSubscription);
 
 module.exports = router;
