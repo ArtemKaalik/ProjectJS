@@ -1,38 +1,17 @@
 const express = require('express');
+const router = express.Router();
+const controllerUser = require('../controllers/controllerUser');
+const verifyJWT = require('../middleware/verifyJWT');
 
-const router = express.Router()
-
-const Model = require('../models/user');
-
-//Post Method
-router.post('/postUser', async (req, res) => {
-    const data = new Model({
-        username: req.body.username,
-        password: req.body.password,
-        email: req.body.email,
-        bio: req.body.bio,
-        image: req.body.image,
-        subscriptions: req.body.subscriptions
-    })
-
-    try {
-        const dataToSave = await data.save();
-        res.status(200).json(dataToSave)
-    }
-    catch (error) {
-        res.status(400).json({message: error.message})
-    }
-})
-
-// GET Method
-router.get('/getAllUsers', async (req, res) => {
-    try{
-        const data = await Model.find();
-        res.json(data)
-    }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
-})
+// Registration user
+router.post('/user', controllerUser.registerUser);
+// Show All Users
+router.get('/user/all', controllerUser.showUsers);
+// Find user by id
+router.get('/user/current', verifyJWT, controllerUser.showUserById);
+// Update user
+router.put('/user/:id', controllerUser.updateUser);
+// Current logged user
+router.post('/user/login',controllerUser.userLogin);
 
 module.exports = router;

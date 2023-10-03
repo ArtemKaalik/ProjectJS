@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-
+const uniqueValidator = require('mongoose-unique-validator');
+const jwt = require("jsonwebtoken");
+const Subs=require('../models/subscriptions')
 
 const user = new mongoose.Schema({
     username: {
@@ -32,6 +34,10 @@ const user = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:"subscriptions"
     },
+    followingUsers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    }],
     subscriptionStartDate: {
         type: Date,
         default: Date.now()
@@ -40,16 +46,15 @@ const user = new mongoose.Schema({
         type: Date,
         default: function () {
         const currentDate = new Date();
-        currentDate.setMonth(currentDate.getMonth() + 1); // Добавляем один месяц к текущей дате
+        currentDate.setMonth(currentDate.getMonth() + 1); // Один месяц к текущей дате
         return currentDate;
         }
     }
 },
     {
-        timestamps: false
+        timestamps: false,
+        versionKey: false
     });
-
-user.plugin(uniqueValidator);
 
 // @desc generate access token for a user
 // @required valid email and password
@@ -65,15 +70,72 @@ user.methods.generateAccessToken = function() {
         { expiresIn: "1d"}
     );
     return accessToken;
-}
+};
 
-user.methods.toUserResponse = function() {
+user.methods.toUserResponse =async function() {
+    const subsObject=await Subs.findById(this.subscription).exec();
     return {
         username: this.username,
         email: this.email,
         bio: this.bio,
         image: this.image,
+        subscription: subsObject.toSubscriptionJSON(),
+        subscriptionStartDate: this.subscriptionStartDate,
+        subscriptionEndDate: this.subscriptionEndDate,
         token: this.generateAccessToken()
     }
-};
+}
+    user.methods.toProfileJSON = function (user) {
+        return {
+            username: this.username,
+            bio: this.bio,
+            image: this.image,
+            following: user ? user.isFollowing(this._id) : false
+        }
+    };
+    user.methods.isFollowing = function (id) {
+        const idStr = id.toString();
+        for (const followingUser of this.followingUsers) {
+            if (followingUser.toString() === idStr) {
+                return true;
+            }
+        }
+        return false;
+    };
+    
+    user.methods.follow = function (id) {
+        if(this.followingUsers.indexOf(id) === -1){
+            this.followingUsers.push(id);
+        }
+        return this.save();
+    };
+    
+    user.methods.unfollow = function (id) {
+        if(this.followingUsers.indexOf(id) !== -1){
+            this.followingUsers.remove(id);
+        }
+        return this.save();
+    };
+    // users.methods.like = function (id) {
+    //     if(this.likedArticles.indexOf(id) === -1){
+    //         this.likedArticles.push(id);
+    //     }
+    //     return this.save();
+    // }
+    // users.methods.unLike = function (id) {
+    //     if(this.likedArticles.indexOf(id) !== -1){
+    //         this.likedArticles.remove(id);
+    //     }
+    //     return this.save();
+    // }
+    // users.methods.isLiked = function (id) {
+    //     const idStr = id.toString();
+    //     for (const article of this.likedArticles) {
+    //         if (article.toString() === idStr) {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
+    
 module.exports = mongoose.model('user', user);

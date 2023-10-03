@@ -1,24 +1,43 @@
 require('dotenv').config();
+const PORT = process.env.PORT || 3000;
 const express = require('express');
+const cors = require('cors');
+const corsOptions = require('./config/corsOptions');
+const cookieParser = require('cookie-parser');
+const connectDB = require('./config/dbConnect');
 const mongoose = require('mongoose');
-const mongoString = process.env.DATABASE_URL 
 const routes = require('./routes/routesSubscriptions');
 
-mongoose.connect(mongoString);
-const database = mongoose.connection
-
-database.on('error', (error) => {
-    console.log(error)
-})
-
-database.once('connected', () => {
-    console.log('Database Connected');
-})
+connectDB();
 
 const app = express();
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/api', routes)
+app.use(express.urlencoded({
+    extended: true
+  }));
+app.use(cookieParser());
 
-app.listen(3000, () => {
-    console.log(`Server Started at ${3000}`)
+app.use('/', require('./routes/routes'));
+
+app.use('/api', routes);
+
+app.use('/api', require('./routes/routesUser'));
+
+// app.use('/api', require('./routes/routesProfiles'));
+
+app.use('/api', require('./routes/routesComment'));
+
+app.use('/api', require('./routes/routesArticle'));
+
+
+mongoose.connection.once('open', () => {
+    console.log('Connected to MongoDB');
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+});
+
+mongoose.connection.on('error', err => {
+    console.log(err);
 })

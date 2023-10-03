@@ -22,4 +22,22 @@ const subscriptions = new mongoose.Schema({
         timestamps: false
 })
 
+subscriptions.methods.toSubscriptionResponse=function () {
+    return{
+        title : this.title,
+        status : this.status,
+        price : this.price,
+        articleCount : this.articleCount        
+    }
+};
+
+subscriptions.methods.toSubscriptionJSON = function () {
+    return{
+        title : this.title,
+        status : this.status,
+        price : this.price,
+        articleCount : this.articleCount        
+    }
+};
+
 module.exports = mongoose.model('Subscriptions', subscriptions)
