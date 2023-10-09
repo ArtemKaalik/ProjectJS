@@ -67,17 +67,17 @@ const showUserById = asyncHandler(async (req, res) => {
 
 
 const showUsers = asyncHandler(async (req, res) => {
+    const query={}
     const data = await User.find();
+    const UserCount = await User.count(query);
     return res.status(200).json({
             user:await Promise.all(data.map(async user=>{
                 return await user.toUserResponse();
             })),
+            userCount:UserCount
     });
 });
 
-// const followedUser=asyncHandler(async(req,res)=>{
-//     const data = await User.findById(req.params.id).exec();
-// })
 
 const userLogin = asyncHandler(async (req, res) => {
     const email=req.body.email

@@ -33,11 +33,11 @@ const user=new mongoose.Schema({
         ref:"subscriptions",
         default:null
     },
-    subscriptionExpirationDate:{
+    subscriptionStartDate:{
         type:Date,
         default:"",
     },
-    subscriptionStartDate:{
+    subscriptionEndDate:{
         type:Date,
         default:""
     },
@@ -98,8 +98,8 @@ user.methods.toUserResponse = async function() {
         bio:this.bio,
         image:this.image,
         subscription:subObj.toSubscriptionJSON(),
-        subscriptionExpirationDate:this.subscriptionExpirationDate,
         subscriptionStartDate:this.subscriptionStartDate,
+        subscriptionEndDate:this.subscriptionEndDate,
         token: token
     }
 };
@@ -123,8 +123,8 @@ user.methods.toUserResponseAuth = async function() {
         bio:this.bio,
         image:this.image,
         subscription:subObj.toSubscriptionJSON(),
-        subscriptionEndDate:this.subscriptionEndDate,
-        subscriptionStartDate:this.subscriptionStartDate
+        subscriptionStartDate:this.subscriptionStartDate,
+        subscriptionEndDate:this.subscriptionEndDate
     }
 };
 
@@ -133,8 +133,8 @@ user.methods.toUserResponseAuthSub = async function() {
     return {
         username: this.username,
         subscription:subObj.toSubscriptionJSON(),
-        subscriptionEndDate:this.subscriptionEndDate,
         subscriptionStartDate:this.subscriptionStartDate,
+        subscriptionEndDate:this.subscriptionEndDate,
     }
 };
 
@@ -147,8 +147,8 @@ user.methods.toUserJSON = async function() {
         bio:this.bio,
         image:this.image,
         subscription:subObj.toSubscriptionJSON(),
-        subscriptionEndDate:this.subscriptionEndDate,
-        subscriptionStartDate:this.subscriptionStartDate
+        subscriptionStartDate:this.subscriptionStartDate,
+        subscriptionEndDate:this.subscriptionEndDate
     }
 };
 
