@@ -7,7 +7,7 @@ const verifyJWT = require('../middleware/verifyJWT');
 router.post('/user', controllerUser.registerUser);
 // Show All Users
 router.get('/user/all', controllerUser.showUsers);
-// Find user by id
+// Current Subscription
 router.get('/user/current', verifyJWT, controllerUser.showUserById);
 // Update user
 router.put('/user/update', verifyJWT, controllerUser.updateUser);

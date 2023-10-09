@@ -199,26 +199,26 @@ user.methods.isFollowing = function (id) {
     }
     return false;
 };
-    // user.methods.like = function (id) {
-    //     if(this.likedArticles.indexOf(id) === -1){
-    //         this.likedArticles.push(id);
-    //     }
-    //     return this.save();
-    // }
-    // user.methods.unLike = function (id) {
-    //     if(this.likedArticles.indexOf(id) !== -1){
-    //         this.likedArticles.remove(id);
-    //     }
-    //     return this.save();
-    // }
-    // user.methods.isLiked = function (id) {
-    //     const idStr = id.toString();
-    //     for (const article of this.likedArticles) {
-    //         if (article.toString() === idStr) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    user.methods.like = function (id) {
+        if(this.likedArticles.indexOf(id) === -1){
+            this.likedArticles.push(id);
+        }
+        return this.save();
+    }
+    user.methods.unLike = function (id) {
+        if(this.likedArticles.indexOf(id) !== -1){
+            this.likedArticles.remove(id);
+        }
+        return this.save();
+    }
+    user.methods.isLiked = function (id) {
+        const idStr = id.toString();
+        for (const article of this.likedArticles) {
+            if (article.toString() === idStr) {
+                return true;
+            }
+        }
+        return false;
+    }
     
 module.exports = mongoose.model('user', user);

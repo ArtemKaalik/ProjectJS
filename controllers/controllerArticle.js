@@ -55,7 +55,7 @@ const createArticle = asyncHandler(async (req, res) => {
 });
 
 const deleteArticle = asyncHandler(async (req, res) => {
-    const loginUser = await User.findOne({username:req.username}).exec();
+    const loginUser = await User.findOne({email:req.userEmail}).exec();
     if (article.loginUser.toString() === loginUser._id.toString()) {
         await Article.findByIdAndDelete(article._id);
         res.status(200).json({
@@ -71,7 +71,7 @@ const deleteArticle = asyncHandler(async (req, res) => {
 
 const favoriteArticle = asyncHandler(async (req, res) => {
     const loginUser = await User.findOne({username:req.username}).exec();
-    const article = await Article.findOne(req.params.slug).exec();
+    const article = await Article.findOne(req.params).exec();
 
     if (!loginUser) {
         return res.status(401).json({
@@ -96,7 +96,7 @@ const favoriteArticle = asyncHandler(async (req, res) => {
 
 const unfavoriteArticle = asyncHandler(async (req, res) => {
     const loginUser = await User.findOne({username:req.username}).exec();
-    const article = await Article.findOne(req.params.slug).exec();
+    const article = await Article.findOne(req.params).exec();
 
     if (!loginUser) {
         return res.status(401).json({
@@ -127,7 +127,7 @@ const updateArticle = asyncHandler(async (req, res) => {
 
     const loginUser = await User.findOne({username:req.username}).exec();
 
-    const update = await Article.findOne(req.params.slug).exec();
+    const update = await Article.findOne(req.params).exec();
 
     if (title) {
         update.title = title;

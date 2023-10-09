@@ -1,5 +1,6 @@
 const Subscription = require('../models/subscriptions');
 const asyncHandler = require('express-async-handler');
+const User=require("../models/user");
 
 
 const addSubscription = asyncHandler(async (req, res) => {
@@ -65,7 +66,7 @@ const updateSubscription=asyncHandler(async(req,res)=>{
 });
 
 const deleteSubscription=asyncHandler(async(req,res)=>{
-    const subscription = await Subscription.findByOne(req.params.title);
+    const subscription = await Subscription.findOne(req.params);
     const deleted = await Subscription.findByIdAndRemove(subscription._id);
     res.send(`Subscription "${deleted.title}" has been deleted..`)
 });
@@ -86,7 +87,7 @@ const showById=asyncHandler(async(req,res)=>{
 
 const giveSubscription=asyncHandler(async(req,res)=>{
     const loginUser = await User.findOne({email:req.userEmail}).exec();
-    const subscription = await Subscription.findOne(req.params.title)
+    const subscription = await Subscription.findOne(req.params)
     const authHeader = req.headers.authorization || req.headers.Authorization
     const token = authHeader.split(' ')[1];
     if (subscription.status === "Month") {

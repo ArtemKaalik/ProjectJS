@@ -56,7 +56,7 @@ router.delete('/subs/:title', verifyJWT, controllerSubscriptions.deleteSubscript
 router.get('/subs/all', verifyJWT, controllerSubscriptions.showSubscriptions);
 
 router.get('/subs/:title', verifyJWT, controllerSubscriptions.showById);
-
-router.put('/sub/give/:title',verifyJWT, controllerSubscriptions.giveSubscription);
+// Give subscription to... (must be loggedin)
+router.put('/subs/give/:title',verifyJWT, controllerSubscriptions.giveSubscription);
 
 module.exports = router;
