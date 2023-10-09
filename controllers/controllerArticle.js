@@ -70,54 +70,44 @@ const deleteArticle = asyncHandler(async (req, res) => {
 });
 
 const favoriteArticle = asyncHandler(async (req, res) => {
-    const loginUser = await User.findOne({username:req.username}).exec();
-    const article = await Article.findOne(req.params).exec();
-
-    if (!loginUser) {
-        return res.status(401).json({
-            message: "User Not Found"
-        });
+    const loginUser = await User.findOne({email:req.userEmail}).exec();
+    const article = await Article.findOne(req.params)
+    if(!article){
+        return res.status(404).json({
+            message:"Article not found!"
+        })
     }
-    if (!article) {
-        return res.status(401).json({
-            message: "Article Not Found"
-        });
-    }
-    // console.log(`article info ${article}`);
-
-    await loginUser.favorite(article._id);
-
-    const updatedArticle = await article.updateFavoriteCount();
-
-    return res.status(200).json({
-        article: await updatedArticle.toArticleResponse(loginUser)
-    });
-});
-
-const unfavoriteArticle = asyncHandler(async (req, res) => {
-    const loginUser = await User.findOne({username:req.username}).exec();
-    const article = await Article.findOne(req.params).exec();
-
-    if (!loginUser) {
-        return res.status(401).json({
-            message: "User Not Found"
-        });
-    }
-
-    if (!article) {
-        return res.status(401).json({
-            message: "Article Not Found"
-        });
-    }
-
-    await loginUser.unfavorite(article._id);
-
-    await article.updateFavoriteCount();
-
+    if (loginUser.favoriteArticles.includes(article._id)) {
+        article.favorite=article.favorite
+    }else{
+        article.favorite=article.favorite+1
+       }
+    await loginUser.favorite(article._id)
+    await article.save();
     return res.status(200).json({
         article: await article.toArticleResponse(loginUser)
-    });
-});
+    })
+})
+
+const unfavoriteArticle = asyncHandler(async (req, res) => {
+    const loginUser = await User.findOne({email:req.userEmail}).exec();
+    const article = await Article.findOne(req.params)
+    if(!article){
+        return res.status(404).json({
+            message:"Article not found!"
+        })
+    }
+    if (loginUser.favoriteArticles.includes(article._id)) {
+        article.favorite=article.favorite-1
+    }else{
+        article.favorite=article.favorite
+       }
+    await loginUser.unFavorite(article._id)
+    await article.save();
+    return res.status(200).json({
+        article: await article.toArticleResponse(loginUser)
+    })
+})
 
 const updateArticle = asyncHandler(async (req, res) => {
     const title = req.body.title;

@@ -7,7 +7,6 @@ const registerUser = asyncHandler(async (req, res) => {
     const email = req.body.email;
     const username=req.body.username;
     const password=req.body.password;
-    const id=req.body.subscription;
 
     // confirm data
     if (!email || !username || !password) {
@@ -53,11 +52,18 @@ const thisUser=asyncHandler(async(req,res)=>{
 
 
 const showUserById = asyncHandler(async (req, res) => {
-    const data = await Subscription.findById(req.params.id);
+    const email = req.userEmail;
+    const user = await User.findOne({ email }).exec();
+    if(!user){
+        return res.status(400).json({
+            message:"User not found!"
+        });
+    }
     return res.status(200).json({
-        subscription:data
+        user:await user.toUserResponseAuth()
     });
 });
+
 
 
 const showUsers = asyncHandler(async (req, res) => {

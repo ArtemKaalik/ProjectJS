@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const slugify = require('slugify');
-const User = require('./user');
+const User = require('../models/user');
 
 const article = new mongoose.Schema({
     slug: {
@@ -72,7 +72,7 @@ article.methods.toArticleResponse = async function () {
         updatedAt: this.updatedAt,
         tagList: this.tagList,
         favorited: this.favorited,
-        author: await authorObj.toProfileJSON(user)
+        // author: await authorObj.toProfileJSON(User)
     }
 }
 

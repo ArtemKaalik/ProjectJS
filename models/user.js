@@ -181,14 +181,14 @@ user.methods.deleteFollower = function (id) {
 };
 
 
-user.methods.toProfileJSON = function (user) {
-    return {
-        username: this.username,
-        bio: this.bio,
-        image: this.image,
-        following: user ? user.isFollowing(this._id) : false
-    }
-};
+// user.methods.toProfileJSON = function (user) {
+//     return {
+//         username: this.username,
+//         bio: this.bio,
+//         image: this.image,
+//         following: user ? user.isFollowing(this._id) : false
+//     }
+// };
 
 user.methods.isFollowing = function (id) {
     const idStr = id.toString();
