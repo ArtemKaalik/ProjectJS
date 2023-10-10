@@ -5,6 +5,67 @@
   <title>Our project</title>
 </head>
 <body>
-<h1>Test</h1>
+<h1>
+  GET ('/article'); Список всех Article
+
+  GET ('/article/:slug'); Поиск Article по Slug
+  
+  POST ('/article/'); Создать новый article.
+  Пример создания нового артикля
+  {
+    "title": "Birds",
+    "description": "Birds",
+    "body": "Birds",
+    "tagList": ["Birds"]
+  }
+  
+  DELETE ('/article/:slug'); Удалить article по slug
+  
+  PUT ('/article/:slug'); Обновить существующий article
+
+================================================================
+  Регистрация пользователя
+  POST ('/user');
+
+  Пример создания пользователя
+  {
+    "email": "test@mail.ee",
+    "username": "test",
+    "password": "123"
+  }
+
+  Показать список всех пользователей
+  GET ('/user/all');
+  Показать текущего зарегестрированного пользователя
+  GET ('/user/current');
+  Обновить инфо о пользователе
+  PUT ('/user/update');
+  Вход
+  POST ('/user/login');
+
+================================================================
+Добавить подписку 
+POST ('/subs');
+
+Пример создания подписки
+{
+  "title": "10Month",
+  "status": "Month",      //Month или Year//
+  "price": 5,
+  "articleCount": 10
+}
+
+Обновить инфо о подписке
+PUT ('/subs/:title');
+Удалить подписку по названию
+DELETE ('/subs/:title');
+Показать все подписки
+GET ('/subs/all');
+Подписка по названию
+GET ('/subs/:title');
+Добавить подписку пользователю (Нужен вход по токену)
+PUT ('/subs/give/:title');
+
+</h1>
 </body>
 </html>
