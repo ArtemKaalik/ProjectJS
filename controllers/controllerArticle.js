@@ -21,7 +21,7 @@ const createArticle = asyncHandler(async (req, res) => {
     const title=req.body.title;
     const description=req.body.description;
     const body=req.body.body;
-    const tagList=req.query.taglist;
+    const tagList=req.query.tagList;
 
     const loginUser = await User.findOne({email:req.userEmail}).exec();
     console.log(loginUser);
@@ -77,7 +77,7 @@ const favoriteArticle = asyncHandler(async (req, res) => {
             message:"Article not found!"
         })
     }
-    if (loginUser.favoriteArticles.includes(article._id)) {
+    if (loginUser.favoriteArticle.includes(article._id)) {
         article.favorite=article.favorite
     }else{
         article.favorite=article.favorite+1

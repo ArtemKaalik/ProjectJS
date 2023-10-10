@@ -13,9 +13,9 @@ router.post('/article/', verifyJWT, controllerArticle.createArticle);
 
 router.delete('/article/:slug', verifyJWT, controllerArticle.deleteArticle);
 
-router.post('/article/:slug/favorite', verifyJWT, controllerArticle.favoriteArticle);
+// router.post('/article/:slug/favorite', verifyJWT, controllerArticle.favoriteArticle); 
 
-router.delete('/article/:slug/favorite', verifyJWT, controllerArticle.unfavoriteArticle);
+// router.delete('/article/:slug/favorite', verifyJWT, controllerArticle.unfavoriteArticle);
 
 router.put('/article/:slug', verifyJWT, controllerArticle.updateArticle);
 

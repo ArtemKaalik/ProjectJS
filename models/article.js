@@ -6,73 +6,63 @@ const User = require('../models/user');
 const article = new mongoose.Schema({
     slug: {
         type: String,
-        unique: true,
         lowercase: true,
+        unique: true,
         index: true
     },
     title: {
-        type: String,
         required: true,
+        type: String,
+        unique: true
     },
     description: {
-        type: String,
-        required: true
+        required: true,
+        type: String
     },
     body: {
-        type: String,
-        required: true
+        required: true,
+        type: String
     },
     tagList: [{
         type: String,
         required: true
     }],
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
-    },
-    favouritesCount: {
+    favorite: {
         type: Number,
         default: 0
+    },
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        default: null
     },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
     }]
-}, {
-    timestamps: true,
-    versionKey: false
-});
-
-article.plugin(uniqueValidator);
+},
+{
+    timestamps:true,
+    versionKey:false
+})
 
 article.pre('save', function(next){
     this.slug = slugify(this.title, { lower: true, replacement: '-'});
     next();
 });
 
-article.methods.updateFavoriteCount = async function () {
-    const favoriteCount = await User.count({
-        favouriteArticles: {$in: [this._id]}
-    });
-
-    this.favouritesCount = favoriteCount;
-
-    return this.save();
-}
-
-// user is the logged-in user
-article.methods.toArticleResponse = async function () {
+article.methods.toArticleResponse = async function(){
     const authorObj = await User.findById(this.author).exec();
-    return {
+    return{
         slug: this.slug,
         title: this.title,
         description: this.description,
         body: this.body,
-        createdAt: this.createdAt,
-        updatedAt: this.updatedAt,
         tagList: this.tagList,
-        favorited: this.favorited,
-        // author: await authorObj.toProfileJSON(User)
+        favorite: this.favorite,
+        author: await authorObj.toUserJSON(),
+        createdAt:this.createdAt,
+        updatedAt:this.updatedAt
     }
 }
 
@@ -83,7 +73,7 @@ article.methods.addComment = function (commentId) {
     return this.save();
 };
 
-article.methods.removeComment = function (commentId) {
+article.methods.deleteComment = function (commentId) {
     if(this.comments.indexOf(commentId) !== -1){
         this.comments.remove(commentId);
     }
